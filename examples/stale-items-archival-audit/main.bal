@@ -85,9 +85,11 @@ public function main() returns error? {
 
         if versionCount > 0 {
             lists:MicrosoftGraphListItemVersion latestVersion = versions[0];
-            string lastModifiedDateTime = latestVersion.lastModifiedDateTime ?: "Unknown";
-            io:println("  Last substantive change (most recent version): " + lastModifiedDateTime);
-
+            string? lastModifiedDateTime = latestVersion?.lastModifiedDateTime;
+            if lastModifiedDateTime !is () {
+                io:println("  Last substantive change (most recent version): " + lastModifiedDateTime);
+            }
+            
             anydata|() rawLastModifiedBy = latestVersion?.lastModifiedBy;
             if rawLastModifiedBy is lists:MicrosoftGraphIdentitySet {
                 lists:MicrosoftGraphIdentitySet lastModifiedBy = rawLastModifiedBy;
