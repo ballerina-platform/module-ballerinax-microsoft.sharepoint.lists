@@ -30,8 +30,10 @@ plugins {
 rootProject.name = 'module-ballerinax-microsoft.sharepoint.lists'
 
 include ':microsoft.sharepoint.lists-ballerina'
+include ':microsoft.sharepoint.lists-examples'
 
 project(':microsoft.sharepoint.lists-ballerina').projectDir = file("ballerina")
+project(':microsoft.sharepoint.lists-examples').projectDir = file("examples")
 
 gradleEnterprise {
     buildScan {
