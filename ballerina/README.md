@@ -1,11 +1,11 @@
-# microsoft.sharepoint.lists Connector
-
 ## Overview
+
 [Microsoft SharePoint](https://www.microsoft.com/en-us/microsoft-365/sharepoint/collaboration) is a collaborative platform that enables organizations to create, manage, and share content, documents, and data through customizable sites, lists, and libraries deeply integrated with the Microsoft 365 ecosystem.
 
 The `ballerinax/microsoft.sharepoint.lists` package offers APIs to connect and interact with the [Microsoft SharePoint Lists API](https://learn.microsoft.com/en-us/graph/api/resources/sharepoint?view=graph-rest-1.0) endpoints, specifically based on [Microsoft Graph REST API v1.0](https://learn.microsoft.com/en-us/graph/api/resources/list?view=graph-rest-1.0).
 
 ## Setup guide
+
 To use the Microsoft SharePoint Lists connector, you must have access to the Microsoft SharePoint API through a [Microsoft Azure developer account](https://portal.azure.com/) and obtain the necessary OAuth 2.0 credentials (Client ID, Client Secret, and Tenant ID). If you do not have a Microsoft account, you can sign up for one [here](https://signup.microsoft.com/).
 
 ### Step 1: Create a Microsoft Account and Set Up SharePoint
