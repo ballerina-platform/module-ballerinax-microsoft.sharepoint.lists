@@ -1,4 +1,5 @@
 import ballerina/io;
+import ballerina/time;
 import ballerinax/microsoft.sharepoint.lists;
 
 configurable string tenantId = ?;
@@ -7,6 +8,7 @@ configurable string clientSecret = ?;
 configurable string siteId = ?;
 configurable string listId = ?;
 configurable string notificationUrl = ?;
+configurable string clientState = ?;
 
 public function main() returns error? {
     lists:Client sharepointClient = check new ({
@@ -18,6 +20,10 @@ public function main() returns error? {
         }
     });
 
+    time:Utc currentTime = time:utcNow();
+    string expirationDateTime = time:utcToString(time:utcAddSeconds(currentTime, 31536000.0));
+    string renewalDateTime = time:utcToString(time:utcAddSeconds(currentTime, 63072000.0));
+
     io:println("=== Webhook Subscription Lifecycle Management for SharePoint List ===");
     io:println("");
 
@@ -26,8 +32,8 @@ public function main() returns error? {
     lists:MicrosoftGraphSubscription subscriptionPayload = {
         changeType: "created,updated",
         notificationUrl: notificationUrl,
-        expirationDateTime: "2025-12-31T23:59:59Z",
-        clientState: "secretClientState-12345"
+        expirationDateTime: expirationDateTime,
+        clientState: clientState
     };
 
     lists:MicrosoftGraphSubscription createdSubscription = check sharepointClient->createSubscription(
@@ -42,13 +48,11 @@ public function main() returns error? {
     string|() createdChangeType = createdSubscription?.changeType;
     string|() createdNotificationUrl = createdSubscription?.notificationUrl;
     string|() createdExpiration = createdSubscription?.expirationDateTime;
-    string|() createdClientState = createdSubscription?.clientState;
 
     io:println("  Subscription ID       : ", createdId ?: "N/A");
     io:println("  Change Type           : ", createdChangeType ?: "N/A");
     io:println("  Notification URL      : ", createdNotificationUrl ?: "N/A");
     io:println("  Expiration DateTime   : ", createdExpiration ?: "N/A");
-    io:println("  Client State          : ", createdClientState ?: "N/A");
     io:println("");
 
     string subscriptionId = createdId ?: "";
@@ -74,19 +78,17 @@ public function main() returns error? {
     string|() retrievedChangeType = retrievedSubscription?.changeType;
     string|() retrievedNotificationUrl = retrievedSubscription?.notificationUrl;
     string|() retrievedExpiration = retrievedSubscription?.expirationDateTime;
-    string|() retrievedClientState = retrievedSubscription?.clientState;
 
     io:println("  Subscription ID       : ", retrievedId ?: "N/A");
     io:println("  Change Type           : ", retrievedChangeType ?: "N/A");
     io:println("  Notification URL      : ", retrievedNotificationUrl ?: "N/A");
     io:println("  Expiration DateTime   : ", retrievedExpiration ?: "N/A");
-    io:println("  Client State          : ", retrievedClientState ?: "N/A");
     io:println("");
 
     io:println("Step 3: Extending subscription expiration date to ensure continuity...");
 
     lists:MicrosoftGraphSubscription updatePayload = {
-        expirationDateTime: "2026-06-30T23:59:59Z"
+        expirationDateTime: renewalDateTime
     };
 
     error? updateResult = sharepointClient->updateSubscription(
@@ -103,7 +105,7 @@ public function main() returns error? {
 
     io:println("Subscription expiration extended successfully!");
     io:println("  Subscription ID       : ", subscriptionId);
-    io:println("  New Expiration Date   : 2026-06-30T23:59:59Z");
+    io:println("  New Expiration Date   : ", renewalDateTime);
     io:println("");
 
     io:println("=== Webhook Subscription Lifecycle Management Completed ===");

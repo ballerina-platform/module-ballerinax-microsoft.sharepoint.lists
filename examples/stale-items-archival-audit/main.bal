@@ -1,4 +1,5 @@
 import ballerina/io;
+import ballerina/time;
 import ballerinax/microsoft.sharepoint.lists;
 
 configurable string clientId = ?;
@@ -19,11 +20,13 @@ public function main() returns error? {
 
     lists:Client sharePointClient = check new (config);
 
+    time:Utc currentTime = time:utcNow();
+    string staleCutoffDate = time:utcToString(time:utcAddSeconds(currentTime, -7776000.0));
+    string archiveDate = time:utcToString(currentTime).substring(0, 10);
+    string filterQuery = string `fields/Modified lt '${staleCutoffDate}'`;
+
     io:println("=== SharePoint List Audit and Archive Workflow ===");
     io:println("");
-
-    string staleCutoffDate = "2024-10-01T00:00:00Z";
-    string filterQuery = string `fields/Modified lt '${staleCutoffDate}'`;
 
     io:println("Step 1: Retrieving stale list items (not modified since " + staleCutoffDate + ")...");
 
@@ -48,7 +51,6 @@ public function main() returns error? {
     io:println("");
 
     int archivedCount = 0;
-    string archiveDate = "2025-01-08";
 
     foreach lists:MicrosoftGraphListItem item in staleItems {
         string itemId = item.id ?: "unknown";
@@ -67,7 +69,7 @@ public function main() returns error? {
 
         io:println("  Step 2: Retrieving version history for item: " + itemId);
 
-        lists:MicrosoftGraphListItemVersionCollectionResponse versionsResponse = check sharePointClient->listItemVersions(
+        lists:MicrosoftGraphListItemVersionCollectionResponse|error versionsResponse = sharePointClient->listItemVersions(
             siteId,
             listId,
             itemId,
@@ -78,34 +80,39 @@ public function main() returns error? {
             }
         );
 
-        lists:MicrosoftGraphListItemVersion[] versions = versionsResponse.value ?: [];
-        int versionCount = versions.length();
+        if versionsResponse is error {
+            io:println("  WARNING: Failed to retrieve version history for item " + itemId + ": " + versionsResponse.message());
+            io:println("  Proceeding to archive based on item metadata.");
+        } else {
+            lists:MicrosoftGraphListItemVersion[] versions = versionsResponse.value ?: [];
+            int versionCount = versions.length();
 
-        io:println("  Total versions found: " + versionCount.toString());
+            io:println("  Total versions found: " + versionCount.toString());
 
-        if versionCount > 0 {
-            lists:MicrosoftGraphListItemVersion latestVersion = versions[0];
-            string? lastModifiedDateTime = latestVersion?.lastModifiedDateTime;
-            if lastModifiedDateTime !is () {
-                io:println("  Last substantive change (most recent version): " + lastModifiedDateTime);
-            }
-            
-            anydata|() rawLastModifiedBy = latestVersion?.lastModifiedBy;
-            if rawLastModifiedBy is lists:MicrosoftGraphIdentitySet {
-                lists:MicrosoftGraphIdentitySet lastModifiedBy = rawLastModifiedBy;
-                anydata|() rawUserIdentity = lastModifiedBy?.user;
-                if rawUserIdentity is lists:MicrosoftGraphIdentity {
-                    lists:MicrosoftGraphIdentity userIdentity = rawUserIdentity;
-                    string|() displayName = userIdentity?.displayName;
-                    if displayName is string {
-                        io:println("  Last modified by: " + displayName);
+            if versionCount > 0 {
+                lists:MicrosoftGraphListItemVersion latestVersion = versions[0];
+                string? lastModifiedDateTime = latestVersion?.lastModifiedDateTime;
+                if lastModifiedDateTime !is () {
+                    io:println("  Last substantive change (most recent version): " + lastModifiedDateTime);
+                }
+
+                anydata|() rawLastModifiedBy = latestVersion?.lastModifiedBy;
+                if rawLastModifiedBy is lists:MicrosoftGraphIdentitySet {
+                    lists:MicrosoftGraphIdentitySet lastModifiedBy = rawLastModifiedBy;
+                    anydata|() rawUserIdentity = lastModifiedBy?.user;
+                    if rawUserIdentity is lists:MicrosoftGraphIdentity {
+                        lists:MicrosoftGraphIdentity userIdentity = rawUserIdentity;
+                        string|() displayName = userIdentity?.displayName;
+                        if displayName is string {
+                            io:println("  Last modified by: " + displayName);
+                        }
                     }
                 }
-            }
 
-            io:println("  Version history confirms item is stale. Proceeding to archive.");
-        } else {
-            io:println("  No version history available. Proceeding to archive based on item metadata.");
+                io:println("  Version history confirms item is stale. Proceeding to archive.");
+            } else {
+                io:println("  No version history available. Proceeding to archive based on item metadata.");
+            }
         }
 
         io:println("  Step 3: Archiving item " + itemId + " with Status='Archived' and ArchiveDate='" + archiveDate + "'");
