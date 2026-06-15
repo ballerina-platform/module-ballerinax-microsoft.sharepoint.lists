@@ -4,7 +4,7 @@ The `microsoft.sharepoint.lists` connector provides practical examples illustrat
 
 1. [Compliance snapshot verification](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/compliance-snapshot-verification) - Verify compliance snapshots by retrieving and validating list data from SharePoint against defined compliance criteria.
 
-2. [SharePoint webhook subscription lifecycle](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/sharepoint-webhook-subscription-lifecycle) - Manage the full lifecycle of SharePoint webhook subscriptions, including creation, renewal, and deletion.
+2. [SharePoint webhook subscription lifecycle](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/sharepoint-webhook-subscription-lifecycle) - Manage SharePoint webhook subscriptions, including creation, verification, and extension.
 
 3. [Content type compliance audit](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/content-type-compliance-audit) - Audit SharePoint list items to ensure they conform to the required content types and compliance standards.
 
@@ -14,11 +14,17 @@ The `microsoft.sharepoint.lists` connector provides practical examples illustrat
 
 1. Generate Microsoft SharePoint credentials to authenticate the connector as described in the [Setup guide](https://central.ballerina.io/ballerinax/microsoft.sharepoint.lists/latest#setup-guide).
 
-2. For each example, create a `Config.toml` file the related configuration. Here's an example of how your `Config.toml` file should look:
+2. For each example, create a `Config.toml` file with the required configuration. The following fields are common across all examples:
 
     ```toml
-    token = "<Access Token>"
+    tenantId = "<Your_Tenant_Id>"
+    clientId = "<Your_Client_Id>"
+    clientSecret = "<Your_Client_Secret>"
+    siteId = "<Your_SharePoint_Site_Id>"
+    listId = "<Your_SharePoint_List_Id>"
     ```
+
+    Some examples require additional fields. Refer to the `main.bal` of each example for the full list of required configurables.
 
 ## Running an Example
 

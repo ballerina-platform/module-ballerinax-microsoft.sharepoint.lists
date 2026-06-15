@@ -5,11 +5,13 @@
 [![GitHub Issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-library/module/microsoft.sharepoint.lists.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-library/labels/module%microsoft.sharepoint.lists)
 
 ## Overview
+
 [Microsoft SharePoint](https://www.microsoft.com/en-us/microsoft-365/sharepoint/collaboration) is a cloud-based collaboration and content management platform that enables organizations to create, manage, and share information through sites, lists, libraries, and workflows across teams and enterprises.
 
-The `ballerinax/microsoft.sharepoint.lists` package offers APIs to connect and interact with [Microsoft SharePoint Lists API](https://learn.microsoft.com/en-us/graph/api/resources/list?view=graph-rest-1.0) endpoints, specifically based on [Microsoft Graph REST API v1.0](https://learn.microsoft.com/en-us/graph/overview).
+The `ballerinax/microsoft.sharepoint.lists` package offers APIs to connect and interact with [Microsoft SharePoint Lists API](https://learn.microsoft.com/en-us/graph/api/resources/list?view=graph-rest-1.0) endpoints, specifically based on [Microsoft Graph REST API v1.0](https://learn.microsoft.com/en-us/graph/api/overview?view=graph-rest-1.0).
 
 ## Setup guide
+
 To use the Microsoft SharePoint Lists connector, you must have access to the Microsoft SharePoint API through a [Microsoft Azure developer account](https://portal.azure.com/) and obtain the necessary OAuth 2.0 credentials (client ID, client secret, and tenant ID). If you do not have a Microsoft account, you can sign up for one [here](https://signup.microsoft.com/).
 
 ### Step 1: Create a Microsoft Account and Set Up SharePoint
@@ -42,16 +44,16 @@ To use the Microsoft SharePoint Lists connector, you must have access to the Mic
    https://login.microsoftonline.com/<tenantId>/oauth2/v2.0/token
    ```
 
-
 > **Tip:** You must copy and store the client secret value somewhere safe immediately after generation. It won't be visible again in the Azure Portal for security reasons.
 
 ## Quickstart
+
 To use the `microsoft.sharepoint.lists` connector in your Ballerina application, update the `.bal` file as follows:
 
 ### Step 1: Import the module
 
 ```ballerina
-import ballerinax/microsoft.sharepoint.lists as mssplists;
+import ballerinax/microsoft.sharepoint.lists;
 ```
 
 ### Step 2: Instantiate a new connector
@@ -64,14 +66,14 @@ clientSecret = "<Your_Client_Secret>"
 tokenUrl = "<Your_Token_Url>"
 ```
 
-2. Create a `mssplists:ConnectionConfig` and initialize the client:
+1. Create a `lists:ConnectionConfig` and initialize the client:
 
 ```ballerina
 configurable string clientId = ?;
 configurable string clientSecret = ?;
 configurable string tokenUrl = ?;
 
-final mssplists:Client msSpListsClient = check new ({
+final lists:Client listsClient = check new ({
     auth: {
         tokenUrl,
         clientId,
@@ -89,7 +91,7 @@ Now, utilize the available connector operations.
 
 ```ballerina
 public function main() returns error? {
-    mssplists:MicrosoftGraphList newList = {
+    lists:MicrosoftGraphList newList = {
         displayName: "Project Tasks",
         list: {
             template: "genericList",
@@ -97,7 +99,7 @@ public function main() returns error? {
         }
     };
 
-    mssplists:MicrosoftGraphList response = check msSpListsClient->createList("contoso.sharepoint.com,abc123,def456", newList);
+    lists:MicrosoftGraphList response = check listsClient->createList("contoso.sharepoint.com,abc123,def456", newList);
 }
 ```
 
@@ -108,6 +110,7 @@ bal run
 ```
 
 ## Examples
+
 The `microsoft.sharepoint.lists` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples), covering the following use cases:
 
 1. [Compliance snapshot verification](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/compliance-snapshot-verification) - Demonstrates how to capture and verify compliance snapshots of SharePoint list data.

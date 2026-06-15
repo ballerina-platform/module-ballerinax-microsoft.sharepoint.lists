@@ -2,7 +2,7 @@
 
 [Microsoft SharePoint](https://www.microsoft.com/en-us/microsoft-365/sharepoint/collaboration) is a collaborative platform that enables organizations to create, manage, and share content, documents, and data through customizable sites, lists, and libraries deeply integrated with the Microsoft 365 ecosystem.
 
-The `ballerinax/microsoft.sharepoint.lists` package offers APIs to connect and interact with the [Microsoft SharePoint Lists API](https://learn.microsoft.com/en-us/graph/api/resources/sharepoint?view=graph-rest-1.0) endpoints, specifically based on [Microsoft Graph REST API v1.0](https://learn.microsoft.com/en-us/graph/api/resources/list?view=graph-rest-1.0).
+The `ballerinax/microsoft.sharepoint.lists` package offers APIs to connect and interact with the [Microsoft SharePoint Lists API](https://learn.microsoft.com/en-us/graph/api/resources/list?view=graph-rest-1.0) endpoints, specifically based on [Microsoft Graph REST API v1.0](https://learn.microsoft.com/en-us/graph/api/overview?view=graph-rest-1.0).
 
 ## Setup guide
 
@@ -35,6 +35,12 @@ To use the Microsoft SharePoint Lists connector, you must have access to the Mic
 
 8. In the left panel, navigate to **API permissions**, click **+ Add a permission**, select **Microsoft Graph**, and grant the required SharePoint-related permissions (e.g., `Sites.Read.All`, `Sites.ReadWrite.All`). Click **Grant admin consent** to activate the permissions.
 
+9. Construct your `tokenUrl` using the **Directory (tenant) ID** noted in step 5:
+
+   ```
+   https://login.microsoftonline.com/<tenantId>/oauth2/v2.0/token
+   ```
+
 > **Tip:** You must copy and store the Client Secret value somewhere safe. It won't be visible again in the Azure Portal after you navigate away from the page, for security reasons.
 
 ## Quickstart
@@ -43,8 +49,7 @@ To use the `microsoft.sharepoint.lists` connector in your Ballerina application,
 ### Step 1: Import the module
 
 ```ballerina
-import ballerina/oauth2;
-import ballerinax/microsoft.sharepoint.lists as mslists;
+import ballerinax/microsoft.sharepoint.lists;
 ```
 
 ### Step 2: Instantiate a new connector
@@ -54,21 +59,22 @@ import ballerinax/microsoft.sharepoint.lists as mslists;
 ```toml
 clientId = "<Your_Client_Id>"
 clientSecret = "<Your_Client_Secret>"
-refreshToken = "<Your_Refresh_Token>"
+tokenUrl = "<Your_Token_Url>"
 ```
 
-2. Create a `mslists:ConnectionConfig` and initialize the client:
+2. Create a `lists:ConnectionConfig` and initialize the client:
 
 ```ballerina
 configurable string clientId = ?;
 configurable string clientSecret = ?;
-configurable string refreshToken = ?;
+configurable string tokenUrl = ?;
 
-final mslists:Client mslistsClient = check new ({
+final lists:Client listsClient = check new ({
     auth: {
+        tokenUrl,
         clientId,
         clientSecret,
-        refreshToken
+        scopes: ["https://graph.microsoft.com/.default"]
     }
 });
 ```
@@ -81,7 +87,7 @@ Now, utilize the available connector operations.
 
 ```ballerina
 public function main() returns error? {
-    mslists:MicrosoftGraphList newList = {
+    lists:MicrosoftGraphList newList = {
         displayName: "Project Tasks",
         list: {
             template: "genericList",
@@ -89,10 +95,7 @@ public function main() returns error? {
         }
     };
 
-    mslists:MicrosoftGraphList response = check mslistsClient->createList(
-        siteId = "contoso.sharepoint.com,site-id-guid,web-id-guid",
-        payload = newList
-    );
+    lists:MicrosoftGraphList response = check listsClient->createList("contoso.sharepoint.com,abc123,def456", newList);
 }
 ```
 
@@ -105,7 +108,7 @@ bal run
 ## Examples
 The `microsoft.sharepoint.lists` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples), covering the following use cases:
 
-1. [Compliance snapshot verification](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/compliance-snapshot-verification) - Demonstrates how to capture and verify compliance snapshots of SharePoint list data using the Ballerina connector.
-2. [Sharepoint webhook subscription lifecycle](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/sharepoint-webhook-subscription-lifecycle) - Illustrates creating, renewing, and deleting webhook subscriptions for SharePoint lists.
-3. [Content type compliance audit](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/content-type-compliance-audit) - Demonstrates how to audit SharePoint list items for adherence to defined content type requirements.
+1. [Compliance snapshot verification](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/compliance-snapshot-verification) - Demonstrates how to capture and verify compliance snapshots of SharePoint list data.
+2. [Sharepoint webhook subscription lifecycle](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/sharepoint-webhook-subscription-lifecycle) - Illustrates creating, verifying, and extending SharePoint webhook subscriptions to manage event-driven notifications.
+3. [Content type compliance audit](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/content-type-compliance-audit) - Demonstrates how to audit SharePoint list items for adherence to expected content type configurations.
 4. [Stale items archival audit](https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists/tree/main/examples/stale-items-archival-audit) - Illustrates identifying and archiving stale items from SharePoint lists based on inactivity criteria.
