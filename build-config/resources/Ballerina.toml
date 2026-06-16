@@ -5,7 +5,7 @@ name = "microsoft.sharepoint.lists"
 version = "@toml.version@"
 license = ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = [] # TODO: Add keywords
+keywords = ["Area/Storage & File Management", "Vendor/Microsoft", "Name/Microsoft SharePoint Lists", "SharePoint", "Lists", "Sites", "Type/Connector"]
 # icon = "icon.png" # TODO: Add icon
 repository = "https://github.com/ballerina-platform/module-ballerinax-microsoft.sharepoint.lists"
 
