@@ -12,7 +12,7 @@ The `ballerinax/microsoft.sharepoint.lists` package offers APIs to connect and i
 
 ## Setup guide
 
-To use the Microsoft SharePoint Lists connector, you must have access to the Microsoft SharePoint API through a [Microsoft Azure developer account](https://portal.azure.com/) and obtain client credentials by registering an application in Microsoft Entra ID. If you do not have a Microsoft account, you can sign up for one [here](https://account.microsoft.com/account).
+To use the Microsoft SharePoint Lists connector, you must have access to the Microsoft SharePoint API through a [Microsoft Azure developer account](https://portal.azure.com/) and obtain client credentials by registering an application in Microsoft Entra ID. If you do not have a Microsoft account, you can sign up for one at the [Microsoft account sign-up page](https://account.microsoft.com/account).
 
 ### Step 1: Create a Microsoft Account and Set Up SharePoint Access
 
