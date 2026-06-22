@@ -224,7 +224,7 @@ For more information, go to the [contribution guidelines](https://github.com/bal
 All contributors are encouraged to read the [Ballerina Code of Conduct](https://ballerina.io/code-of-conduct).
 
 
-## Useful Links
+## Useful links
 
 * For more information go to the [`microsoft.sharepoint.lists` package](https://central.ballerina.io/ballerinax/microsoft.sharepoint.lists/latest).
 * For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
